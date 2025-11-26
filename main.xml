@@ -44,6 +44,17 @@
                 icon.className = isDark ? &#39;fa-solid fa-sun&#39; : &#39;fa-solid fa-moon&#39;;
             }
         }
+
+        // Create new post function
+        function createNewPost() {
+            // Redirect to Blogger&#39;s post editor
+            var blogId = &#39;<data:blog.blogId/>&#39;;
+            if (blogId) {
+                window.location.href = &#39;https://www.blogger.com/blog/post/create/&#39; + blogId;
+            } else {
+                alert(&#39;Unable to create post. Please log in to Blogger.&#39;);
+            }
+        }
     </script>
 
     <b:skin><![CDATA[
@@ -308,7 +319,7 @@
         text-decoration: none;
         transition: all 0.2s ease;
         border: 2px solid;
-        color: white;
+        /* Color is set by JavaScript based on background brightness */
     }
 
     .flair-tag:hover {
@@ -401,7 +412,14 @@
     /* Hide "Replies" text and duplicate elements */
     .comment-replies > .title,
     #comments .comment-replies > h4,
-    #comments .comment-replies > .title {
+    #comments .comment-replies > .title,
+    #comment-holder .comment-replies .thread-count {
+        display: none !important;
+    }
+
+    /* Remove duplicate/extra "Reply" links */
+    #comment-holder .continue a.comment-reply,
+    #comment-holder .comment-replies .continue {
         display: none !important;
     }
 
@@ -512,10 +530,11 @@
 
     /* Threaded Replies - Reddit style indentation */
     .comment-replies,
-    .comment .comment-replies {
-        margin-left: 24px;
-        padding-left: 0;
-        border-left: none;
+    .comment .comment-replies,
+    #comment-holder .comment-replies {
+        margin-left: 20px;
+        padding-left: 2px;
+        border-left: 2px solid var(--card-border);
         margin-top: 8px;
     }
 
@@ -741,8 +760,8 @@
             <button class='icon-btn' onclick='toggleTheme()' title='Toggle Dark Mode'>
                 <i class='fa-solid fa-moon' id='themeIcon'/>
             </button>
-            <button class='icon-btn' title='User'>
-                <i class='fa-regular fa-user'/>
+            <button class='icon-btn' onclick='createNewPost()' title='Create Post'>
+                <i class='fa-solid fa-plus'/>
             </button>
         </div>
     </header>
