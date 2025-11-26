@@ -382,74 +382,182 @@
         border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     }
 
-    /* Comments */
+    /* Comments - Reddit Style */
     .comments-section {
         margin-top: 40px;
         padding-top: 30px;
         border-top: 1px solid var(--card-border);
     }
 
-    .comments-title {
+    .comments-title,
+    #comments h3.title,
+    .comments.threaded h3.title {
         font-size: 18px;
         font-weight: 700;
         margin-bottom: 20px;
-    }
-    
-    .comment-item {
-        margin-bottom: 16px;
-        padding: 16px;
-        background: var(--hover-bg);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--card-border);
-        position: relative;
-    }
-    
-    .comment-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-    
-    .comment-author {
-        font-weight: 700;
         color: var(--text-color);
     }
-    
-    .comment-body {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 10px;
+
+    /* Hide "Replies" text and duplicate elements */
+    .comment-replies > .title,
+    #comments .comment-replies > h4,
+    #comments .comment-replies > .title {
+        display: none !important;
     }
-    
-    .comment-actions {
+
+    /* Blogger's default comment structure */
+    .comments.threaded {
+        margin-top: 0;
+    }
+
+    .comments-content {
+        margin-bottom: 20px;
+    }
+
+    /* Main comment container - Reddit style */
+    #comments-block .comment,
+    .comment {
+        margin-bottom: 0;
+        padding: 12px 16px;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        border-left: 2px solid transparent;
+        position: relative;
+        transition: border-color 0.2s;
+    }
+
+    .comment:hover {
+        border-left-color: var(--text-secondary);
+        background: var(--hover-bg);
+    }
+
+    /* Comment header - author and timestamp inline */
+    .comment-header,
+    .comment .comment-author {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .comment .comment-author,
+    .comment .comment-author a {
+        font-weight: 700;
+        color: var(--text-color);
         font-size: 12px;
     }
-    
-    .reply-btn {
-        color: var(--accent-color);
+
+    /* Timestamp styling */
+    .comment-timestamp,
+    .comment-timestamp a {
+        color: var(--text-secondary);
+        font-size: 12px;
+        text-decoration: none;
+    }
+
+    .comment-timestamp::before {
+        content: "•";
+        margin: 0 6px;
+        color: var(--text-secondary);
+    }
+
+    /* Comment body */
+    .comment-body,
+    .comment .comment-block .comment-body {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+        color: var(--text-color);
+        word-wrap: break-word;
+    }
+
+    /* Comment footer actions */
+    .comment-actions,
+    .comment-footer {
+        display: flex;
+        gap: 12px;
+        font-size: 12px;
+        align-items: center;
+        margin-top: 4px;
+    }
+
+    /* Reply button - Reddit style */
+    .comment-reply,
+    .reply-btn,
+    .comment-footer a {
+        color: var(--text-secondary);
         cursor: pointer;
-        font-weight: 600;
+        font-weight: 700;
+        background: none;
+        border: none;
+        padding: 2px 0;
+        font-size: 12px;
+        text-decoration: none;
+        transition: color 0.2s;
     }
-    
-    /* Threaded Replies */
-    .comment-replies {
-        margin-left: 20px;
-        padding-left: 20px;
+
+    .comment-reply:hover,
+    .reply-btn:hover,
+    .comment-footer a:hover {
+        color: var(--text-color);
+    }
+
+    /* Delete icon styling */
+    .item-control {
+        margin-left: auto;
+    }
+
+    /* Threaded Replies - Reddit style indentation */
+    .comment-replies,
+    .comment .comment-replies {
+        margin-left: 24px;
+        padding-left: 0;
+        border-left: none;
+        margin-top: 8px;
+    }
+
+    /* Nested comments vertical line */
+    .comment .comment {
+        margin-top: 0;
         border-left: 2px solid var(--card-border);
-        margin-top: 15px;
+        margin-left: 0;
     }
-    
+
     /* Comment Form Container */
-    .comment-form-container {
+    .comment-form-container,
+    .comment-form,
+    section.comments .comment-footer {
         margin-top: 30px;
         padding: 20px;
         background: var(--card-bg);
         border-radius: var(--radius-md);
         border: 1px solid var(--card-border);
+    }
+
+    .comment-form iframe,
+    .blogger-iframe-colorize {
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-sm);
+        width: 100%;
+    }
+
+    /* Hide avatar container and unwanted elements */
+    .avatar-image-container,
+    .comment .avatar-image-container {
+        display: none !important;
+    }
+
+    /* Comment block adjustments */
+    .comment .comment-block {
+        margin-left: 0;
+    }
+
+    /* Make sure comment content is visible */
+    .comment-content {
+        display: block;
     }
     
     /* Vote Actions */
@@ -837,14 +945,12 @@
 </b:includable>
                 <b:includable id='commentPicker' var='post'/>
                 <b:includable id='comments' var='post'>
-                        <div class='comments-content'>
-                            <b:if cond='data:post.showThreadedComments'>
-                                <b:include data='post' name='threaded_comments'/>
-                            <b:else/>
-                                <!-- Fallback to simple list if threading is off -->
-                                <b:include data='post' name='simple_comments'/>
-                            </b:if>
-                        </div>
+                        <b:if cond='data:post.showThreadedComments'>
+                            <b:include data='post' name='threadedComments'/>
+                        <b:else/>
+                            <!-- Fallback to simple list if threading is off -->
+                            <b:include data='post' name='simple_comments'/>
+                        </b:if>
                     </b:includable>
                 <b:includable id='commentsLink'>
   <a class='comment-link' expr:href='data:post.commentsUrl' expr:onclick='data:post.commentsUrlOnclick'>
@@ -1142,7 +1248,6 @@
                             </div>
                             
                             <div class='comments-section'>
-                                <h3 class='comments-title'>Comments</h3>
                                 <b:include data='post' name='comments'/>
                             </div>
                         </article>
@@ -1717,14 +1822,7 @@
                 }
             });
 
-            // Event delegation for reply buttons
-            document.addEventListener('click', function(e) {
-                const replyBtn = e.target.closest('.reply-btn');
-                if (replyBtn) {
-                    e.preventDefault();
-                    handleReply(replyBtn);
-                }
-            });
+            // Reply buttons are now handled by Blogger's built-in threaded comment system
         }
 
         // --- Vote Handler ---
@@ -1807,50 +1905,6 @@
                 alert('Failed to copy link');
             }
             document.body.removeChild(textarea);
-        }
-
-        // --- Reply Handler ---
-        function handleReply(btn) {
-            const commentId = btn.getAttribute('data-comment-id');
-            const postId = btn.getAttribute('data-post-id');
-
-            if (!commentId || !postId) return;
-
-            // Try to find and focus the comment iframe
-            const commentEditor = document.getElementById('comment-editor');
-            const commentHolder = document.getElementById('comment-holder');
-
-            // Try Blogger's built-in threaded comment reply
-            if (typeof blogger !== 'undefined' && blogger.widgets && blogger.widgets.blog) {
-                // This triggers Blogger's built-in reply mechanism
-                const replyLink = document.querySelector('a[href*="comment-form"][href*="' + commentId + '"]');
-                if (replyLink) {
-                    replyLink.click();
-                    return;
-                }
-            }
-
-            // Try legacy addComment function
-            if (typeof addComment !== 'undefined' && addComment.moveForm) {
-                addComment.moveForm('comment-holder', commentId, 'comment-form', postId);
-                return;
-            }
-
-            // Fallback: scroll to comment form and focus
-            const commentForm = document.querySelector('[name="comment-form"]');
-            if (commentForm) {
-                commentForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Try to focus the iframe after a short delay
-                setTimeout(function() {
-                    if (commentEditor && commentEditor.contentWindow) {
-                        try {
-                            commentEditor.contentWindow.focus();
-                        } catch(e) {
-                            // Cross-origin iframe, can't focus
-                        }
-                    }
-                }, 500);
-            }
         }
 
         // --- Post Navigation & Modal ---
