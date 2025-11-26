@@ -44,6 +44,17 @@
                 icon.className = isDark ? &#39;fa-solid fa-sun&#39; : &#39;fa-solid fa-moon&#39;;
             }
         }
+
+        // Create new post function
+        function createNewPost() {
+            // Redirect to Blogger&#39;s post editor
+            var blogId = &#39;<data:blog.blogId/>&#39;;
+            if (blogId) {
+                window.location.href = &#39;https://www.blogger.com/blog/post/create/&#39; + blogId;
+            } else {
+                alert(&#39;Unable to create post. Please log in to Blogger.&#39;);
+            }
+        }
     </script>
 
     <b:skin><![CDATA[
@@ -749,8 +760,8 @@
             <button class='icon-btn' onclick='toggleTheme()' title='Toggle Dark Mode'>
                 <i class='fa-solid fa-moon' id='themeIcon'/>
             </button>
-            <button class='icon-btn' title='User'>
-                <i class='fa-regular fa-user'/>
+            <button class='icon-btn' onclick='createNewPost()' title='Create Post'>
+                <i class='fa-solid fa-plus'/>
             </button>
         </div>
     </header>
