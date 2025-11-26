@@ -382,114 +382,154 @@
         border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     }
 
-    /* Comments */
+    /* Comments - Reddit Style */
     .comments-section {
         margin-top: 40px;
         padding-top: 30px;
         border-top: 1px solid var(--card-border);
     }
 
-    .comments-title, .title {
+    .comments-title,
+    #comments h3.title,
+    .comments.threaded h3.title {
         font-size: 18px;
         font-weight: 700;
         margin-bottom: 20px;
+        color: var(--text-color);
+    }
+
+    /* Hide "Replies" text and duplicate elements */
+    .comment-replies > .title,
+    #comments .comment-replies > h4,
+    #comments .comment-replies > .title {
+        display: none !important;
     }
 
     /* Blogger's default comment structure */
     .comments.threaded {
-        margin-top: 20px;
+        margin-top: 0;
     }
 
     .comments-content {
         margin-bottom: 20px;
     }
 
+    /* Main comment container - Reddit style */
     #comments-block .comment,
-    .comment-item {
-        margin-bottom: 16px;
-        padding: 16px;
-        background: var(--hover-bg);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--card-border);
+    .comment {
+        margin-bottom: 0;
+        padding: 12px 16px;
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        border-left: 2px solid transparent;
         position: relative;
+        transition: border-color 0.2s;
     }
 
+    .comment:hover {
+        border-left-color: var(--text-secondary);
+        background: var(--hover-bg);
+    }
+
+    /* Comment header - author and timestamp inline */
     .comment-header,
     .comment .comment-author {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
         margin-bottom: 8px;
-        font-size: 13px;
+        font-size: 12px;
         color: var(--text-secondary);
     }
 
-    .comment-author,
-    .comment .comment-author {
+    .comment .comment-author,
+    .comment .comment-author a {
         font-weight: 700;
         color: var(--text-color);
-    }
-
-    .comment-body,
-    .comment .comment-block .comment-body {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 10px;
-        color: var(--text-color);
-    }
-
-    .comment-actions,
-    .comment-footer {
-        display: flex;
-        gap: 10px;
         font-size: 12px;
-        align-items: center;
     }
 
-    .comment-footer .comment-timestamp {
+    /* Timestamp styling */
+    .comment-timestamp,
+    .comment-timestamp a {
         color: var(--text-secondary);
-    }
-
-    .comment-footer .comment-timestamp a {
-        color: var(--text-secondary);
+        font-size: 12px;
         text-decoration: none;
     }
 
-    /* Reply button styling */
+    .comment-timestamp::before {
+        content: "•";
+        margin: 0 6px;
+        color: var(--text-secondary);
+    }
+
+    /* Comment body */
+    .comment-body,
+    .comment .comment-block .comment-body {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+        color: var(--text-color);
+        word-wrap: break-word;
+    }
+
+    /* Comment footer actions */
+    .comment-actions,
+    .comment-footer {
+        display: flex;
+        gap: 12px;
+        font-size: 12px;
+        align-items: center;
+        margin-top: 4px;
+    }
+
+    /* Reply button - Reddit style */
     .comment-reply,
-    .reply-btn {
-        color: var(--accent-color);
+    .reply-btn,
+    .comment-footer a {
+        color: var(--text-secondary);
         cursor: pointer;
-        font-weight: 600;
+        font-weight: 700;
         background: none;
         border: none;
-        padding: 4px 8px;
-        border-radius: var(--radius-sm);
-        transition: background 0.2s;
+        padding: 2px 0;
+        font-size: 12px;
+        text-decoration: none;
+        transition: color 0.2s;
     }
 
     .comment-reply:hover,
-    .reply-btn:hover {
-        background: var(--hover-bg);
+    .reply-btn:hover,
+    .comment-footer a:hover {
+        color: var(--text-color);
     }
 
-    /* Threaded Replies */
+    /* Delete icon styling */
+    .item-control {
+        margin-left: auto;
+    }
+
+    /* Threaded Replies - Reddit style indentation */
     .comment-replies,
     .comment .comment-replies {
-        margin-left: 20px;
-        padding-left: 20px;
-        border-left: 2px solid var(--card-border);
-        margin-top: 15px;
+        margin-left: 24px;
+        padding-left: 0;
+        border-left: none;
+        margin-top: 8px;
     }
 
-    /* Nested comments */
+    /* Nested comments vertical line */
     .comment .comment {
-        margin-top: 15px;
+        margin-top: 0;
+        border-left: 2px solid var(--card-border);
+        margin-left: 0;
     }
 
     /* Comment Form Container */
     .comment-form-container,
     .comment-form,
-    .comment-footer {
+    section.comments .comment-footer {
         margin-top: 30px;
         padding: 20px;
         background: var(--card-bg);
@@ -501,11 +541,23 @@
     .blogger-iframe-colorize {
         border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
+        width: 100%;
     }
 
-    /* Hide avatar container if no image */
-    .avatar-image-container {
-        display: none;
+    /* Hide avatar container and unwanted elements */
+    .avatar-image-container,
+    .comment .avatar-image-container {
+        display: none !important;
+    }
+
+    /* Comment block adjustments */
+    .comment .comment-block {
+        margin-left: 0;
+    }
+
+    /* Make sure comment content is visible */
+    .comment-content {
+        display: block;
     }
     
     /* Vote Actions */
@@ -1196,7 +1248,6 @@
                             </div>
                             
                             <div class='comments-section'>
-                                <h3 class='comments-title'>Comments</h3>
                                 <b:include data='post' name='comments'/>
                             </div>
                         </article>
