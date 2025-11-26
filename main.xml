@@ -290,6 +290,33 @@
         display: none;
     }
 
+    /* Tag Flairs */
+    .post-flairs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .flair-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 2px solid;
+        color: white;
+    }
+
+    .flair-tag:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        filter: brightness(1.1);
+    }
+
     .post-image-container {
         width: 100%;
         border-radius: var(--radius-md);
@@ -980,12 +1007,22 @@
                                 <span>&#8226;</span>
                                 <span>Posted by <data:post.author/></span>
                                 <span>&#8226;</span>
-                                <data:post.dateHeader/>
+                                <span><data:post.timestamp/></span>
                             </div>
 
                             <a class='post-title-link' expr:href='data:post.url' onclick='return handlePostClick(event, this)'>
                                 <h2 class='post-title'><data:post.title/></h2>
                             </a>
+
+                            <b:if cond='data:post.labels'>
+                                <div class='post-flairs'>
+                                    <b:loop values='data:post.labels' var='label'>
+                                        <a class='flair-tag' expr:data-tag='data:label.name' expr:href='data:label.url'>
+                                            <data:label.name/>
+                                        </a>
+                                    </b:loop>
+                                </div>
+                            </b:if>
 
                             <b:if cond='data:post.firstImageUrl'>
                                 <a class='post-image-container' expr:href='data:post.url' onclick='return handlePostClick(event, this)' style='display:block'>
@@ -1065,17 +1102,27 @@
   </b:if>
 </b:includable>
                 <b:includable id='postFullContent' var='post'>
-                        <article class='post-full-view' id='full-post-view'>
+                        <article class='post-full-view' expr:data-url='data:post.url' id='full-post-view'>
                             <div class='post-header'>
                                 <div class='author-avatar'/>
                                 <span style='font-weight:600'>r/<data:blog.title/></span>
                                 <span>&#8226;</span>
                                 <span>Posted by <data:post.author/></span>
                                 <span>&#8226;</span>
-                                <data:post.dateHeader/>
+                                <span><data:post.timestamp/></span>
                             </div>
 
                             <h1 class='post-title' style='font-size: 28px; margin-bottom: 20px;'><data:post.title/></h1>
+
+                            <b:if cond='data:post.labels'>
+                                <div class='post-flairs'>
+                                    <b:loop values='data:post.labels' var='label'>
+                                        <a class='flair-tag' expr:data-tag='data:label.name' expr:href='data:label.url'>
+                                            <data:label.name/>
+                                        </a>
+                                    </b:loop>
+                                </div>
+                            </b:if>
 
                             <div class='post-body'>
                                 <data:post.body/>
@@ -1590,7 +1637,66 @@
         window.addEventListener('DOMContentLoaded', function() {
             updateThemeIcon();
             initEventListeners();
+            initFlairColors();
         });
+
+        // --- Flair Color Generator ---
+        function initFlairColors() {
+            const flairs = document.querySelectorAll('.flair-tag');
+            const colorMap = {};
+
+            // Predefined color palette for flairs
+            const colors = [
+                { bg: '#FF6B6B', border: '#EE5A52' },
+                { bg: '#4ECDC4', border: '#45B8B0' },
+                { bg: '#45B7D1', border: '#3CA3BF' },
+                { bg: '#96CEB4', border: '#88BFA6' },
+                { bg: '#FFEAA7', border: '#F5DC94' },
+                { bg: '#DFE6E9', border: '#B2BEC3' },
+                { bg: '#A29BFE', border: '#6C5CE7' },
+                { bg: '#FD79A8', border: '#E84393' },
+                { bg: '#FDCB6E', border: '#E17055' },
+                { bg: '#6C5CE7', border: '#5F3DC4' },
+                { bg: '#00B894', border: '#00A085' },
+                { bg: '#E17055', border: '#D63031' },
+                { bg: '#74B9FF', border: '#0984E3' },
+                { bg: '#A29BFE', border: '#6C5CE7' },
+                { bg: '#FF7675', border: '#D63031' }
+            ];
+
+            flairs.forEach(function(flair) {
+                const tagName = flair.getAttribute('data-tag');
+                if (!tagName) return;
+
+                // Get or assign color for this tag
+                if (!colorMap[tagName]) {
+                    // Generate consistent color based on tag name
+                    let hash = 0;
+                    for (let i = 0; i < tagName.length; i++) {
+                        hash = tagName.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    const colorIndex = Math.abs(hash) % colors.length;
+                    colorMap[tagName] = colors[colorIndex];
+                }
+
+                const color = colorMap[tagName];
+                flair.style.backgroundColor = color.bg;
+                flair.style.borderColor = color.border;
+
+                // Adjust text color based on background brightness
+                const brightness = getBrightness(color.bg);
+                flair.style.color = brightness > 155 ? '#1c1e21' : '#ffffff';
+            });
+        }
+
+        // Calculate brightness of a hex color
+        function getBrightness(hexColor) {
+            const hex = hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
 
         function initEventListeners() {
             // Event delegation for vote buttons
@@ -1707,18 +1813,43 @@
         function handleReply(btn) {
             const commentId = btn.getAttribute('data-comment-id');
             const postId = btn.getAttribute('data-post-id');
-            
+
             if (!commentId || !postId) return;
-            
-            // Try Blogger's built-in function first
+
+            // Try to find and focus the comment iframe
+            const commentEditor = document.getElementById('comment-editor');
+            const commentHolder = document.getElementById('comment-holder');
+
+            // Try Blogger's built-in threaded comment reply
+            if (typeof blogger !== 'undefined' && blogger.widgets && blogger.widgets.blog) {
+                // This triggers Blogger's built-in reply mechanism
+                const replyLink = document.querySelector('a[href*="comment-form"][href*="' + commentId + '"]');
+                if (replyLink) {
+                    replyLink.click();
+                    return;
+                }
+            }
+
+            // Try legacy addComment function
             if (typeof addComment !== 'undefined' && addComment.moveForm) {
                 addComment.moveForm('comment-holder', commentId, 'comment-form', postId);
-            } else {
-                // Fallback: scroll to comment form
-                const commentForm = document.getElementById('comment-form');
-                if (commentForm) {
-                    commentForm.scrollIntoView({ behavior: 'smooth' });
-                }
+                return;
+            }
+
+            // Fallback: scroll to comment form and focus
+            const commentForm = document.querySelector('[name="comment-form"]');
+            if (commentForm) {
+                commentForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Try to focus the iframe after a short delay
+                setTimeout(function() {
+                    if (commentEditor && commentEditor.contentWindow) {
+                        try {
+                            commentEditor.contentWindow.focus();
+                        } catch(e) {
+                            // Cross-origin iframe, can't focus
+                        }
+                    }
+                }, 500);
             }
         }
 
@@ -1768,6 +1899,8 @@
                     if (content) {
                         modalBody.innerHTML = '';
                         modalBody.appendChild(content.cloneNode(true));
+                        // Re-initialize flair colors for modal content
+                        initFlairColors();
                     } else {
                         window.location.href = url;
                     }
@@ -1820,6 +1953,8 @@
                                 newPosts.forEach(function(post) {
                                     container.appendChild(post);
                                 });
+                                // Re-initialize flair colors for new posts
+                                initFlairColors();
                             }
                             
                             if (newPager) {
